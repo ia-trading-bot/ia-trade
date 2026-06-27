@@ -638,15 +638,6 @@
                         "info-appareil": getInfosAppareil()
                     };
 
-                //     // 3. On envoie
-                //     await envoyerDonneesFirestore(payload);
-
-                //     // Optionnel : Action après le clic (ex: rediriger l'utilisateur s'il y a un vrai lien)
-                //     // window.location.href = bouton.href; 
-                // });
-
-
-
                     // 3. On envoie
                     await envoyerDonneesFirestore(payload);
 
@@ -658,10 +649,6 @@
                     tempLink.click();
                     document.body.removeChild(tempLink);
                 });
-
-
-
-
 
             } else {
                 console.warn(`Le bouton avec l'ID '${boutonId}' n'a pas été trouvé.`);

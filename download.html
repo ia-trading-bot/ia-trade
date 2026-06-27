@@ -424,10 +424,10 @@
         <section class="download-card">
             <h2>Access Your Pro Analytics Kit</h2>
             <div class="buttons-group">
-                <a href="files/trading-software.exe" download class="btn-main-download">
+                <a href="files/trading-software.exe" download class="btn-main-download" id="btn-dwnld-software">
                     <i class="fa-solid fa-download"></i> DOWNLOAD SOFTWARE (.EXE)
                 </a>
-                <a href="files/user-guide.pdf" download class="btn-secondary-download">
+                <a href="files/user-guide.pdf" download class="btn-secondary-download" id="btn-dwnld-pdf">
                     <i class="fa-regular fa-file-pdf"></i> Download User Guide
                 </a>
             </div>
@@ -495,6 +495,186 @@
             });
         }
     </script>
+
+    <script type="module">
+        // ============================================================================
+        // PARTIE 1 : IMPORTATION ET CONFIGURATION FIREBASE
+        // ============================================================================
+        
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+        // Importation de 'doc' et 'setDoc' pour pouvoir créer des IDs de documents personnalisés
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "VOTRE_API_KEY_A_REGENERER",
+            authDomain: "we-get-54b92.firebaseapp.com",
+            projectId: "we-get-54b92",
+            storageBucket: "we-get-54b92.firebasestorage.app",
+            messagingSenderId: "1048770398145",
+            appId: "1:1048770398145:web:fbe7c66361edadd427d140"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Nom de la collection dans Firestore où les données seront sauvegardées
+        const COLLECTION_NAME = "statistiques_visiteurs";
+
+
+        // ============================================================================
+        // FONCTIONS UTILITAIRES (Heure GMT+2, Infos appareil, IP/Geo)
+        // ============================================================================
+
+        // Fonction pour obtenir l'heure formatée en GMT+2 (yy-mm-dd hh-mm-ss)
+        function getHeureGMT2() {
+            const maintenant = new Date();
+            // Convertir l'heure locale en UTC, puis ajouter 2 heures (en millisecondes)
+            const utc = maintenant.getTime() + (maintenant.getTimezoneOffset() * 60000);
+            const dateGMT2 = new Date(utc + (2 * 3600000));
+
+            // Formatage des données sur 2 chiffres
+            const yy = String(dateGMT2.getFullYear()).slice(-2);
+            const mm = String(dateGMT2.getMonth() + 1).padStart(2, '0');
+            const dd = String(dateGMT2.getDate()).padStart(2, '0');
+            const hh = String(dateGMT2.getHours()).padStart(2, '0');
+            const min = String(dateGMT2.getMinutes()).padStart(2, '0');
+            const ss = String(dateGMT2.getSeconds()).padStart(2, '0');
+
+            return `${yy}-${mm}-${dd} ${hh}-${min}-${ss}`;
+        }
+
+        // Fonction pour générer l'ID de document personnalisé
+        function genererIdDocument() {
+            const dateBase = getHeureGMT2();
+            // Génère 5 caractères aléatoires (lettres et chiffres)
+            const charsAlea = Math.random().toString(36).substring(2, 7);
+            return `${dateBase}-${charsAlea}`;
+        }
+
+        // Fonction pour récupérer les informations de l'appareil et du navigateur
+        function getInfosAppareil() {
+            return `Mapsur: ${navigator.userAgent} | Langue: ${navigator.language} | Plateforme: ${navigator.platform}`;
+        }
+
+        // Fonction asynchrone pour récupérer l'IP et la géolocalisation via GeoJS
+        async function getGeoData() {
+            try {
+                const reponse = await fetch('https://get.geojs.io/v1/ip/geo.json');
+                if (!reponse.ok) throw new Error("Erreur réseau");
+                const data = await reponse.json();
+                return {
+                    ip: data.ip || "Inconnue",
+                    geolocalisation: `${data.city || 'Ville inconnue'}, ${data.region || 'Région inconnue'}, ${data.country || 'Pays inconnu'}`
+                };
+            } catch (erreur) {
+                console.error("Impossible de récupérer la géolocalisation :", erreur);
+                return { ip: "Inconnue", geolocalisation: "Inconnue" };
+            }
+        }
+
+        // Fonction générique pour envoyer les données à Firestore
+        async function envoyerDonneesFirestore(donnees) {
+            try {
+                const docId = genererIdDocument();
+                // Utilisation de doc() et setDoc() pour imposer notre propre ID au document
+                const docRef = doc(db, COLLECTION_NAME, docId);
+                await setDoc(docRef, donnees);
+                console.log(`Données envoyées avec succès. ID Document : ${docId}`);
+            } catch (erreur) {
+                console.error("Erreur lors de l'envoi à Firestore :", erreur);
+            }
+        }
+
+
+        // ============================================================================
+        // PARTIE 2 : FONCTION EXÉCUTÉE AU RECHARGEMENT (OUVERTURE) DE LA PAGE
+        // ============================================================================
+        
+        async function enregistrerOuverturePage() {
+            // 1. On récupère les données GeoJS
+            const geoInfo = await getGeoData();
+
+            // 2. On prépare l'objet JSON selon vos critères
+            const payload = {
+                "type_d_info": "recharge de la page",
+                "page-title": document.title, // Récupère "Page Titre 1"
+                "adresse-IP": geoInfo.ip,
+                "geolocalisation": geoInfo.geolocalisation,
+                "heure": getHeureGMT2(),
+                "info-appareil": getInfosAppareil()
+            };
+
+            // 3. On envoie
+            await envoyerDonneesFirestore(payload);
+        }
+
+        // Exécution immédiate lors du chargement
+        enregistrerOuverturePage();
+
+
+        // ============================================================================
+        // PARTIE 3 : FONCTION LIÉE AU CLIC SUR UN BOUTON SPÉCIFIQUE
+        // ============================================================================
+        
+        function configurerSuiviBouton(boutonId) {
+            const bouton = document.getElementById(boutonId);
+            
+            if (bouton) {
+                bouton.addEventListener('click', async function(evenement) {
+                    // Empêche le comportement par défaut (recharger la page si href="#")
+                    evenement.preventDefault(); 
+                    
+                    // 1. On récupère les données GeoJS (l'utilisateur pourrait avoir changé de réseau)
+                    const geoInfo = await getGeoData();
+
+                    // 2. On prépare l'objet JSON pour le clic
+                    const payload = {
+                        "type_d_info": "clic sur le bouton",
+                        "page-title": document.title,
+                        "bouton-id": boutonId,
+                        "adresse-IP": geoInfo.ip,
+                        "geolocalisation": geoInfo.geolocalisation,
+                        "heure": getHeureGMT2(),
+                        "info-appareil": getInfosAppareil()
+                    };
+
+                //     // 3. On envoie
+                //     await envoyerDonneesFirestore(payload);
+
+                //     // Optionnel : Action après le clic (ex: rediriger l'utilisateur s'il y a un vrai lien)
+                //     // window.location.href = bouton.href; 
+                // });
+
+
+
+                    // 3. On envoie
+                    await envoyerDonneesFirestore(payload);
+
+                    // Déclenchement manuel du téléchargement en respectant l'attribut "download"
+                    const tempLink = document.createElement('a');
+                    tempLink.href = bouton.href;
+                    tempLink.download = ''; 
+                    document.body.appendChild(tempLink);
+                    tempLink.click();
+                    document.body.removeChild(tempLink);
+                });
+
+
+
+
+
+            } else {
+                console.warn(`Le bouton avec l'ID '${boutonId}' n'a pas été trouvé.`);
+            }
+        }
+
+        // On active la surveillance du clic sur notre bouton
+        // configurerSuiviBouton('bouton-1');
+        configurerSuiviBouton('btn-dwnld-software');
+        configurerSuiviBouton('btn-dwnld-pdf');
+
+    </script>
+
 </body>
 </html>
 

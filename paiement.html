@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Crypto Payment</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
+
+    <style>
+        :root {
+            --primary-blue: #1e3a8a;
+            --btn-blue: #2563eb;
+            --text-dark: #0f172a;
+            --text-gray: #475569;
+            --bg-light: #f8fafc;
+            --white: #ffffff;
+            --accent-orange: #ff6b00;
+            --star-color: #fbbf24;
+            --danger-red: #dc2626;
+            --success-green: #10b981;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 15% 50%, rgba(0, 0, 0, 0.02) 0%, transparent 50%), 
+                              radial-gradient(circle at 85% 30%, rgba(0, 0, 0, 0.02) 0%, transparent 50%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- NAVBAR --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--white);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: var(--primary-blue);
+        }
+
+        .logo i {
+            font-size: 1.5rem;
+        }
+
+        .software-name {
+            font-weight: 700;
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+            letter-spacing: -0.03em;
+        }
+
+        #bot-name {
+            font-size: 14px;
+        }
+
+        /* --- MAIN LAYOUT (Mobile First) --- */
+        .payment-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .card {
+            background-color: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        /* --- PAYMENT BOX COLUMN --- */
+        .payment-box {
+            text-align: center;
+        }
+
+        .amount-tag {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .currency-label {
+            color: var(--accent-orange);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .qr-wrapper {
+            display: flex;
+            justify-content: center;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: var(--white);
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            width: max-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .address-container {
+            background-color: var(--bg-light);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin: 1.5rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .crypto-address {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            word-break: break-all;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .btn-copy {
+            background-color: var(--btn-blue);
+            color: var(--white);
+            border: none;
+            padding: 0.6rem 1.5rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-copy:hover {
+            background-color: var(--primary-blue);
+        }
+
+        .btn-copy.copied {
+            background-color: var(--success-green);
+            color: var(--white);
+        }
+
+        /* --- VERIFICATION FORM --- */
+        .verification-box {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        .verification-box h3 {
+            font-size: 1.1rem;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--btn-blue);
+        }
+
+        /*.btn-verify {
+            background-color: var(--accent-orange);
+            color: var(--white);
+            border: none;
+            padding: 0.85rem;
+            font-weight: 700;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        .btn-verify:hover {
+            background-color: #e66000;
+        }*/
+
+        .btn-verify {
+            background-color: var(--accent-orange);
+            color: var(--white);
+            border: none;
+            padding: 0.85rem;
+            font-weight: 700;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+            /* AJOUT CHIRURGICAL : Aligner le texte et le spinner proprement */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .btn-verify:hover {
+            background-color: #e66000;
+        }
+
+        /* AJOUT CHIRURGICAL : Style spécifique pour le spinner à l'intérieur du bouton */
+        .btn-verify .spinner {
+            border-color: rgba(255, 255, 255, 0.3);
+            border-top-color: var(--white);
+            display: none; /* Caché par défaut */
+        }
+        
+        /* État désactivé pendant le chargement */
+        .btn-verify:disabled {
+            background-color: #cca385;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            color: var(--danger-red);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            display: none;
+            background-color: rgba(220, 38, 38, 0.05);
+            padding: 0.5rem;
+            border-radius: 6px;
+            border-left: 3px solid var(--danger-red);
+        }
+
+        /* --- CRITICAL WARNING BANNER --- */
+        .network-warning {
+            background-color: rgba(220, 38, 38, 0.05);
+            border: 1.5px solid var(--danger-red);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            text-align: left;
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .network-warning i {
+            color: var(--danger-red);
+            font-size: 1.25rem;
+            margin-top: 0.1rem;
+        }
+
+        .warning-title {
+            color: var(--danger-red);
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+        }
+
+        .warning-desc {
+            color: var(--text-gray);
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        /* --- STEPS & INFO COLUMN --- */
+        .info-box h2 {
+            font-size: 1.25rem;
+            color: var(--primary-blue);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .step-number {
+            background-color: rgba(37, 99, 235, 0.1);
+            color: var(--btn-blue);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .step-content p {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            line-height: 1.4;
+        }
+
+        @media (min-width: 768px) {
+            .payment-container {
+                grid-template-columns: 1fr 1.2fr;
+                gap: 2.5rem;
+                padding: 0 2rem;
+            }
+
+            .address-container {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+
+            .btn-copy {
+                width: auto;
+            }
+            
+            .crypto-address {
+                text-align: left;
+            }
+            
+            #bot-name {
+                font-size: 20px;
+            }
+        }
+
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.8rem;
+            color: var(--text-gray);
+            border-top: 1px solid var(--border-color);
+            background-color: var(--white);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-area">
+            <div class="logo-icon"><i class="fa-solid fa-chart-simple"></i></div>
+            <span class="software-name"><p id="bot-name">AI PREMIUM BINARY OPTIONS SIGNALS</p></span>
+        </div>
+    </header>
+
+    <main class="payment-container">
+        
+        <section class="card payment-box">
+            <div style="margin-bottom: 7px">
+                <p style="text-transform: uppercase; font-size: 0.75rem; background-color: var(--accent-orange); padding: 5px; border-radius: 5px; display: inline; letter-spacing: 0.05em; color: white; font-weight: 900;">Please pay in Tether (crypto).</p>
+            </div>
+            <p style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; color: var(--text-gray); font-weight: 600;">Total Amount Due</p>
+            <div class="amount-tag">99.00 USDT</div>
+            <div class="currency-label"><i class="fa-solid fa-network-wired"></i> TRC-20 Network</div>
+
+            <p class="warning-desc" style="margin-bottom: 0.5rem;">Scan this QR code using your wallet application to pay:</p>
+            
+            <div class="qr-wrapper">
+                <div id="qrcode"></div>
+            </div>
+
+            <p class="warning-desc" style="margin-top: 1rem;">Or copy the exact USDT TRC-20 deposit address below:</p>
+            
+            <div class="address-container">
+                <span class="crypto-address" id="wallet-address">TWLDXXk9DZuWszma83Wa9TbyzLgY4hcKHh</span>
+                <button class="btn-copy" id="btn-copy-action" onclick="copyCryptoAddress()">
+                    <i class="fa-regular fa-copy"></i> <span id="btn-text">Copy</span>
+                </button>
+            </div>
+
+            <div class="network-warning">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <div>
+                    <div class="warning-title">Network: TRON (TRC-20) Only</div>
+                    <div class="warning-desc">
+                        Do <strong>NOT</strong> send funds via Ethereum (ERC-20), BNB Chain (BEP-20), or any other network. Sending assets through an unsupported network will result in <strong>permanent loss of your funds</strong>.
+                    </div>
+                </div>
+            </div>
+
+            <div class="network-warning">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <div>
+                    <div class="warning-title">Please pay the exact amount of 99 USDT.</div>
+                    <div class="warning-desc">
+                        Any incomplete payment could lead to delays or even complications in processing your request.
+                        However, if you mistakenly transfer more than the required amount, the excess will be refunded to you within 3 to 5 hours.
+                    </div>
+                </div>
+            </div>
+
+            <div class="verification-box">
+                <h3>Confirm Your Payment</h3>
+                <div id="error-msg" class="error-message">Invalid Transaction ID or Email. Please check your details.</div>
+                
+                <div class="form-group">
+                    <input type="email" id="buyer-email" class="form-control" placeholder="Enter your email address" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="buyer-txid" class="form-control" placeholder="Paste your Transaction ID (TxID)" required>
+                </div>
+                <!-- <button class="btn-verify" onclick="validateTransaction()">Get The Software</button> -->
+                <button class="btn-verify" id="btn-verify-action" onclick="validateTransaction()">
+                    <div class="spinner" id="btn-spinner"></div>
+                    <span id="btn-text-content">Get The Software</span>
+                </button>
+            </div>
+        </section>
+
+        <section class="card info-box">
+            <h2><i class="fa-solid fa-circle-info"></i> —&gt; 5 EASY STEPS</h2>
+            
+            <div class="steps-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Secure Payment</h3>
+                        <p>You pay safely using your USDT TRC-20 method via your preferred wallet architecture.</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Verify Transaction</h3>
+                        <p>Paste your valid and specific Transaction ID (TxID) along with your email, then click "Get The Software". After that, you will be redirected to the download page.</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Instant Redirect</h3>
+                        <p>Get redirected immediately to the premium download area once the transaction is validated on-chain.</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Email Delivery</h3>
+                        <p>Receive a backup link with the software executable and the complete step-by-step user guide in your inbox.</p>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>Setup & Trade</h3>
+                        <p>Install the program on your workstation, follow the integrated setup guide, and start trading.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <!-- <p>&copy; 2026 FX Trading Systems. All Rights Reserved. Secure Non-Custodial Gateway.</p> -->
+        <!-- <p>AI PREMIUM BINARY OPTIONS SIGNALS -- Copyright © 2021 PRO ANALYST Analytics LLC. All rights reserved.</p> -->
+        <div class="footer-logo">
+                <!-- <i class="fa-brands fa-lemon" style="color:#FACC15;"></i> Lemon Squeezy<br> -->
+            <span style="color:var(--text-dark); font-size: 0.8rem; font-weight: 400;">AI PREMIUM BINARY OPTIONS SIGNALS<br>Copyright © 2021 PRO ANALYST Analytics LLC. All rights reserved.</span>
+        </div>
+    </footer>
+
+    <script>
+        // TRC-20 Address
+        const rawAddress = "TWLDXXk9DZuWszma83Wa9TbyzLgY4hcKHh";
+        const prefixedAddress = "tron:" + rawAddress;
+
+        // Generate QR Code
+        window.addEventListener('DOMContentLoaded', () => {
+            new QRCode(document.getElementById("qrcode"), {
+                text: prefixedAddress,
+                width: 160,
+                height: 160,
+                colorDark : "#0f172a",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.M
+            });
+        });
+
+        // Copy mechanism
+        function copyCryptoAddress() {
+            const copyBtn = document.getElementById("btn-copy-action");
+            navigator.clipboard.writeText(rawAddress).then(() => {
+                copyBtn.classList.add("copied");
+                copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> <span>Copied!</span>';
+                setTimeout(() => {
+                    copyBtn.classList.remove("copied");
+                    copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i> <span>Copy</span>';
+                }, 2500);
+            }).catch(err => {
+                console.error('Could not copy text: ', err);
+            });
+        }
+
+        // // NOUVEAU : Logique de validation du TxID
+        // function validateTransaction() {
+        //     const email = document.getElementById("buyer-email").value.trim();
+        //     const txid = document.getElementById("buyer-txid").value.trim();
+        //     const errorMsg = document.getElementById("error-msg");
+            
+        //     // Un TxID Tron valide est toujours composé de 64 caractères hexadécimaux.
+        //     const txidRegex = /^[a-fA-F0-9]{64}$/;
+
+        //     // Réinitialiser le message d'erreur
+        //     errorMsg.style.display = "none";
+
+        //     // Vérification basique des champs vides
+        //     if (email === "" || txid === "") {
+        //         errorMsg.innerText = "Error: Both Email and Transaction ID are required.";
+        //         errorMsg.style.display = "block";
+        //         return;
+        //     }
+
+        //     // Vérification de la validité du format du TxID selon la condition stricte demandée.
+        //     // Note technique (sans API) : On utilise l'expression régulière pour s'assurer que c'est bien un vrai Hash.
+        //     // On ne peut pas vérifier le montant exact (89-109) côté client sans API, 
+        //     // le filtre regex agit donc ici comme la "condition de validité simple" demandée.
+        //     if (!txidRegex.test(txid)) {
+        //         errorMsg.innerText = "Invalid Transaction ID. It must be exactly 64 hexadecimal characters.";
+        //         errorMsg.style.display = "block";
+        //         return;
+        //     }
+
+        //     // Si toutes les conditions sont remplies (Simulation de la validation du montant)
+        //     // Redirection vers la page de téléchargement
+        //     window.location.href = "download.html";
+        // }
+
+
+        function validateTransaction() {
+            const email = document.getElementById("buyer-email").value.trim();
+            const txid = document.getElementById("buyer-txid").value.trim();
+            const errorMsg = document.getElementById("error-msg");
+            
+            // Éléments du bouton pour gérer le chargement
+            const verifyBtn = document.getElementById("btn-verify-action");
+            const btnSpinner = document.getElementById("btn-spinner");
+            const btnText = document.getElementById("btn-text-content");
+            
+            const txidRegex = /^[a-fA-F0-9]{64}$/;
+
+            // Réinitialiser l'affichage des erreurs
+            errorMsg.style.display = "none";
+
+            // 1. Vérification immédiate des champs vides
+            if (email === "" || txid === "") {
+                errorMsg.innerText = "Error: Both Email and Transaction ID are required.";
+                errorMsg.style.display = "block";
+                return;
+            }
+
+            // 2. Déclenchement de l'animation de chargement
+            verifyBtn.disabled = true;
+            btnSpinner.style.display = "block";
+            btnText.innerText = "Verifying on the TRON blockchain...";
+
+            // 3. Simulation de l'attente réseau (1.5 seconde)
+            setTimeout(() => {
+                
+                // Vérification de la validité du format du TxID
+                if (!txidRegex.test(txid)) {
+                    errorMsg.innerText = "Invalid Transaction ID. Please verify the code from your wallet.";
+                    errorMsg.style.display = "block";
+                    
+                    // Réinitialisation du bouton en cas d'échec
+                    verifyBtn.disabled = false;
+                    btnSpinner.style.display = "none";
+                    btnText.innerText = "Get The Software";
+                    return;
+                }
+
+                // Si le format est valide -> Redirection
+                window.location.href = "download.html";
+
+            }, 1500); // 1500 millisecondes = 1.5s
+        }
+    </script>
+</body>
+</html>

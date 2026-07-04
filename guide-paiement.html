@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How to Pay with USDT - Easy Guide</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-blue: #1e3a8a;
+            --btn-blue: #2563eb;
+            --text-dark: #0f172a;
+            --text-gray: #475569;
+            --bg-light: #f8fafc;
+            --white: #ffffff;
+            --accent-orange: #ff6b00;
+            --star-color: #fbbf24;
+            --danger-red: #dc2626;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--white);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            /* Fond filigrane (simulation des chandeliers) */
+            background-image: radial-gradient(circle at 15% 50%, rgba(0, 0, 0, 0.03) 0%, transparent 50%), 
+                              radial-gradient(circle at 85% 30%, rgba(0, 0, 0, 0.03) 0%, transparent 50%);
+            line-height: 1.6;
+        }
+
+        /* --- NAVBAR --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            border-bottom: 1px solid #e2e8f0;
+            background-color: var(--white);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: var(--primary-blue);
+        }
+
+        .logo i {
+            font-size: 1.5rem;
+        }
+
+        .nav-links {
+            display: none;
+            gap: 2rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: inherit;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--btn-blue);
+        }
+
+        /* --- MAIN CONTENT --- */
+        main {
+            padding: 2.5rem 5%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .intro {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .intro h1 {
+            color: var(--primary-blue);
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .intro p {
+            color: var(--text-gray);
+            font-size: 1.05rem;
+        }
+
+        /* --- WARNINGS SECTION --- */
+        .warnings {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .alert-box {
+            padding: 1.2rem;
+            border-radius: 8px;
+            border-left: 5px solid;
+            background-color: var(--bg-light);
+        }
+
+        .alert-red {
+            border-left-color: var(--danger-red);
+            background-color: #fef2f2;
+        }
+
+        .alert-orange {
+            border-left-color: var(--accent-orange);
+            background-color: #fff7ed;
+        }
+
+        .alert-box h4 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .alert-red h4 { color: var(--danger-red); }
+        .alert-orange h4 { color: var(--accent-orange); }
+
+        .alert-box p {
+            font-size: 0.95rem;
+            color: var(--text-dark);
+        }
+
+        /* --- STEPS --- */
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .step-card {
+            background-color: var(--white);
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 1rem;
+        }
+
+        .step-number {
+            background-color: var(--btn-blue);
+            color: var(--white);
+            width: 35px;
+            height: 35px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            font-weight: 800;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .step-card h3 {
+            color: var(--primary-blue);
+            font-size: 1.25rem;
+        }
+
+        .step-card p {
+            color: var(--text-gray);
+            margin-bottom: 0.8rem;
+        }
+
+        .highlight {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .address-box {
+            background-color: #f1f5f9;
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 1.1rem;
+            word-break: break-all;
+            text-align: center;
+            color: var(--primary-blue);
+            font-weight: bold;
+            margin: 1rem 0;
+            border: 1px dashed var(--btn-blue);
+        }
+
+        .payment-link {
+            display: block;
+            text-align: center;
+            background-color: var(--btn-blue);
+            color: var(--white);
+            padding: 12px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 1rem;
+            transition: background 0.3s;
+        }
+
+        .payment-link:hover {
+            background-color: var(--primary-blue);
+        }
+
+        #bot-name{
+            font-size: 14px;
+        }
+
+        @media (min-width: 768px) {
+            .intro h1 { font-size: 2.2rem; }
+            .step-card { padding: 2rem; }
+            #bot-name{
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo"><i class="fa-solid fa-chart-simple"></i> <p id="bot-name">AI PREMIUM BINARY OPTIONS SIGNALS</p></div>
+        <nav style="display: none;" class="nav-links">
+            <a href="#">Platform</a>
+            <a href="#">Features</a>
+            <a href="#">Pricing</a>
+            <a href="#">Testimonials</a>
+        </nav>
+        <a style="display: none;" href="#" class="sign-in-btn">SIGN IN</a>
+        <div style="display: none;" class="hamburger"><i class="fa-solid fa-bars"></i></div>
+    </header>
+
+    <main>
+        <div class="intro">
+            <h1>How to Pay with Crypto (Beginner Friendly)</h1>
+            <p>New to crypto? Don't worry! Paying with USDT is just like sending money from a digital bank. Follow these simple steps to get your software in minutes.</p>
+        </div>
+
+        <div class="warnings">
+            <div class="alert-box alert-red">
+                <h4><i class="fa-solid fa-triangle-exclamation"></i> 1. NETWORK: TRON (TRC-20) ONLY</h4>
+                <p>Do <b>NOT</b> send funds via Ethereum (ERC-20), BNB Chain (BEP-20), or any other network. Sending assets through an unsupported network will result in <b>permanent loss of your funds</b>.</p>
+            </div>
+            
+            <div class="alert-box alert-orange">
+                <h4><i class="fa-solid fa-circle-exclamation"></i> 2. PLEASE PAY THE EXACT AMOUNT OF 99 USDT</h4>
+                <p>Any incomplete payment could lead to delays or complications in processing your request. However, if you mistakenly transfer more than the required amount, the excess will be <b>refunded to you within 3 to 5 hours</b>.</p>
+            </div>
+        </div>
+
+        <div class="steps">
+            
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <h3>Get a Crypto Wallet</h3>
+                </div>
+                <p>To buy crypto, you need an app. We recommend <b>Binance</b> because it is very fast and easy for beginners. <i>(Note: This is just an example. You can also use other similar apps like Kraken, Trust Wallet, or MoonPay if you prefer).</i></p>
+                <p>Download the app on your phone, create an account, and verify your identity.</p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <h3>Buy USDT with your Bank Card</h3>
+                </div>
+                <p>Once your account is ready, click on <b>"Buy Crypto"</b>.</p>
+                <p>Choose <b>USDT (Tether)</b>. You can use your Credit Card, Debit Card, or Bank Transfer to deposit money. <i>Tip: Buy a little more than 99 USDT (like 101 USDT) to cover the small transfer fee charged by the app.</i></p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">3</div>
+                    <h3>Send 99 USDT to our Address</h3>
+                </div>
+                <p>Go to your wallet, select your USDT, and click <b>Withdraw</b> or <b>Send</b>.</p>
+                <p>Paste this exact address into the "Recipient Address" box:</p>
+                <div class="address-box">TWLDXXk9DZuWszma83Wa9TbyzLgY4hcKHh</div>
+                <p><span class="highlight">CRITICAL:</span> When asked to select a "Network", you must choose <b>TRON (TRC-20)</b>.</p>
+                <p>Enter exactly <b>99</b> as the amount to send, and confirm the transfer.</p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">4</div>
+                    <h3>Get your Software Immediately</h3>
+                </div>
+                <p>After your transfer is successful, your app will give you a receipt called a <b>TxID (Transaction ID)</b>. Please copy this TxID.</p>
+                <p>Click the button below to go to our final payment confirmation page. Enter your <b>Email address</b> and paste the <b>TxID</b>.</p>
+                <p>Finally, click <b>"Get The Software"</b>. You will be instantly redirected to download the software and the PDF user guide. You will also receive an email with the same files immediately!</p>
+                
+                <a href="https://ia-trading-bot.github.io/ia-trade/paiement.html" class="payment-link" target="_blank">
+                    Go to Confirmation Page <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+    <script type="module">
+        // ============================================================================
+        // PARTIE 1 : IMPORTATION ET CONFIGURATION FIREBASE
+        // ============================================================================
+        
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+        // Importation de 'doc' et 'setDoc' pour pouvoir créer des IDs de documents personnalisés
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "VOTRE_API_KEY_A_REGENERER",
+            authDomain: "we-get-54b92.firebaseapp.com",
+            projectId: "we-get-54b92",
+            storageBucket: "we-get-54b92.firebasestorage.app",
+            messagingSenderId: "1048770398145",
+            appId: "1:1048770398145:web:fbe7c66361edadd427d140"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Nom de la collection dans Firestore où les données seront sauvegardées
+        const COLLECTION_NAME = "statistiques_visiteurs";
+
+        // ============================================================================
+        // FONCTIONS UTILITAIRES (Heure GMT+2, Infos appareil, IP/Geo)
+        // ============================================================================
+
+        // Fonction pour obtenir l'heure formatée en GMT+2 (yy-mm-dd hh-mm-ss)
+        function getHeureGMT2() {
+            const maintenant = new Date();
+            // Convertir l'heure locale en UTC, puis ajouter 2 heures (en millisecondes)
+            const utc = maintenant.getTime() + (maintenant.getTimezoneOffset() * 60000);
+            const dateGMT2 = new Date(utc + (2 * 3600000));
+
+            // Formatage des données sur 2 chiffres
+            const yy = String(dateGMT2.getFullYear()).slice(-2);
+            const mm = String(dateGMT2.getMonth() + 1).padStart(2, '0');
+            const dd = String(dateGMT2.getDate()).padStart(2, '0');
+            const hh = String(dateGMT2.getHours()).padStart(2, '0');
+            const min = String(dateGMT2.getMinutes()).padStart(2, '0');
+            const ss = String(dateGMT2.getSeconds()).padStart(2, '0');
+
+            return `${yy}-${mm}-${dd} ${hh}-${min}-${ss}`;
+        }
+
+        // Fonction pour générer l'ID de document personnalisé
+        function genererIdDocument() {
+            const dateBase = getHeureGMT2();
+            // Génère 5 caractères aléatoires (lettres et chiffres)
+            const charsAlea = Math.random().toString(36).substring(2, 7);
+            return `${dateBase}-${charsAlea}`;
+        }
+
+        // Fonction pour récupérer les informations de l'appareil et du navigateur
+        function getInfosAppareil() {
+            return `Mapsur: ${navigator.userAgent} | Langue: ${navigator.language} | Plateforme: ${navigator.platform}`;
+        }
+
+        // Fonction asynchrone pour récupérer l'IP et la géolocalisation via GeoJS
+        async function getGeoData() {
+            try {
+                const reponse = await fetch('https://get.geojs.io/v1/ip/geo.json');
+                if (!reponse.ok) throw new Error("Erreur réseau");
+                const data = await reponse.json();
+                return {
+                    ip: data.ip || "Inconnue",
+                    geolocalisation: `${data.city || 'Ville inconnue'}, ${data.region || 'Région inconnue'}, ${data.country || 'Pays inconnu'}`
+                };
+            } catch (erreur) {
+                console.error("Impossible de récupérer la géolocalisation :", erreur);
+                return { ip: "Inconnue", geolocalisation: "Inconnue" };
+            }
+        }
+
+        // Fonction générique pour envoyer les données à Firestore
+        async function envoyerDonneesFirestore(donnees) {
+            try {
+                const docId = genererIdDocument();
+                // Utilisation de doc() et setDoc() pour imposer notre propre ID au document
+                const docRef = doc(db, COLLECTION_NAME, docId);
+                await setDoc(docRef, donnees);
+                console.log(`Données envoyées avec succès. ID Document : ${docId}`);
+            } catch (erreur) {
+                console.error("Erreur lors de l'envoi à Firestore :", erreur);
+            }
+        }
+
+
+        // ============================================================================
+        // PARTIE 2 : FONCTION EXÉCUTÉE AU RECHARGEMENT (OUVERTURE) DE LA PAGE
+        // ============================================================================
+        
+        async function enregistrerOuverturePage() {
+            // 1. On récupère les données GeoJS
+            const geoInfo = await getGeoData();
+
+            // 2. On prépare l'objet JSON selon vos critères
+            const payload = {
+                "type_d_info": "recharge de la page",
+                "page-title": document.title, // Récupère "Page Titre 1"
+                "adresse-IP": geoInfo.ip,
+                "geolocalisation": geoInfo.geolocalisation,
+                "heure": getHeureGMT2(),
+                "info-appareil": getInfosAppareil()
+            };
+
+            // 3. On envoie
+            await envoyerDonneesFirestore(payload);
+        }
+
+        // Exécution immédiate lors du chargement
+        enregistrerOuverturePage();
+
+
+        // // ============================================================================
+        // // PARTIE 3 : FONCTION LIÉE AU CLIC SUR UN BOUTON SPÉCIFIQUE
+        // // ============================================================================
+        
+        // function configurerSuiviBouton(boutonId) {
+        //     const bouton = document.getElementById(boutonId);
+            
+        //     if (bouton) {
+        //         bouton.addEventListener('click', async function(evenement) {
+        //             // Empêche le comportement par défaut (recharger la page si href="#")
+        //             evenement.preventDefault(); 
+                    
+        //             // 1. On récupère les données GeoJS (l'utilisateur pourrait avoir changé de réseau)
+        //             const geoInfo = await getGeoData();
+
+        //             // 2. On prépare l'objet JSON pour le clic
+        //             const payload = {
+        //                 "type_d_info": "clic sur le bouton",
+        //                 "page-title": document.title,
+        //                 "bouton-id": boutonId,
+        //                 "adresse-IP": geoInfo.ip,
+        //                 "geolocalisation": geoInfo.geolocalisation,
+        //                 "heure": getHeureGMT2(),
+        //                 "info-appareil": getInfosAppareil()
+        //             };
+
+        //             // 3. On envoie
+        //             await envoyerDonneesFirestore(payload);
+
+        //             // Déclenchement manuel du téléchargement en respectant l'attribut "download"
+        //             const tempLink = document.createElement('a');
+        //             tempLink.href = bouton.href;
+        //             tempLink.download = ''; 
+        //             document.body.appendChild(tempLink);
+        //             tempLink.click();
+        //             document.body.removeChild(tempLink);
+        //         });
+
+        //     } else {
+        //         console.warn(`Le bouton avec l'ID '${boutonId}' n'a pas été trouvé.`);
+        //     }
+        // }
+
+        // // On active la surveillance du clic sur notre bouton
+        // // configurerSuiviBouton('--------bouton-1');
+        // configurerSuiviBouton('--------btn-dwnld-software');
+        // configurerSuiviBouton('--------btn-dwnld-pdf');
+
+    </script>
+
+</body>
+</html>
+

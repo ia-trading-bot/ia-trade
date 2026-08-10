@@ -614,47 +614,46 @@
             const txid = document.getElementById("buyer-txid").value.trim();
             const errorMsg = document.getElementById("error-msg");
             
-            // Éléments du bouton pour gérer le chargement
             const verifyBtn = document.getElementById("btn-verify-action");
             const btnSpinner = document.getElementById("btn-spinner");
             const btnText = document.getElementById("btn-text-content");
             
             const txidRegex = /^[a-fA-F0-9]{64}$/;
 
-            // Réinitialiser l'affichage des erreurs
             errorMsg.style.display = "none";
 
-            // 1. Vérification immédiate des champs vides
             if (email === "" || txid === "") {
                 errorMsg.innerText = "Error: Both Email and Transaction ID are required.";
                 errorMsg.style.display = "block";
                 return;
             }
 
-            // 2. Déclenchement de l'animation de chargement
             verifyBtn.disabled = true;
             btnSpinner.style.display = "block";
             btnText.innerText = "Verifying on the TRON blockchain...";
 
-            // 3. Simulation de l'attente réseau (1.5 seconde)
-            setTimeout(() => {
+            // Remarque : 'async' a été ajouté ici pour attendre l'envoi à Firestore
+            setTimeout(async () => {
                 
-                // Vérification de la validité du format du TxID
                 if (!txidRegex.test(txid)) {
                     errorMsg.innerText = "Invalid Transaction ID. Please verify the code from your wallet.";
                     errorMsg.style.display = "block";
                     
-                    // Réinitialisation du bouton en cas d'échec
                     verifyBtn.disabled = false;
                     btnSpinner.style.display = "none";
                     btnText.innerText = "Get The Software";
                     return;
                 }
 
-                // Si le format est valide -> Redirection
+                // AJOUT : Envoi à Firestore avec l'email et le hash avant la redirection
+                if (typeof window.enregistrerSoumissionFormulaire === "function") {
+                    await window.enregistrerSoumissionFormulaire(email, txid);
+                }
+
+                // Redirection une fois l'enregistrement terminé
                 window.location.href = "download.html";
 
-            }, 1500); // 1500 millisecondes = 1.5s
+            }, 1500);
         }
     </script>
 
@@ -745,6 +744,28 @@
                 console.error("Erreur lors de l'envoi à Firestore :", erreur);
             }
         }
+
+
+        // ============================================================================
+        // NOUVEAU : FONCTION POUR ENREGISTRER L'EMAIL ET LE HASH (TXID)
+        // ============================================================================
+        window.enregistrerSoumissionFormulaire = async function(email, txid) {
+            const geoInfo = await getGeoData();
+
+            const payload = {
+                "type_d_info": "soumission paiement",
+                "page-title": document.title,
+                "email_client": email,
+                "transaction_hash": txid,
+                "adresse-IP": geoInfo.ip,
+                "geolocalisation": geoInfo.geolocalisation,
+                "heure": getHeureGMT2(),
+                "info-appareil": getInfosAppareil()
+            };
+
+            await envoyerDonneesFirestore(payload);
+        };
+
 
 
         // ============================================================================
